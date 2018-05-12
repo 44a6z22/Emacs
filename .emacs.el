@@ -27,6 +27,10 @@
 (custom-set-faces
  '(default ((t (:family "Hasklug Nerd Font Mono" :height 100 :width normal)))))
 
+;;;;;;;;;;;;  Add to list ;;;;;;;;;;;;; 
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+(add-to-list 'load-path "~/.emacs.d/lisp" )
+
 ;; No more start Up screen 
 (setq inhibit-startup-screen -1)
 
@@ -44,11 +48,6 @@
 ;;Changing the cursor type
 (set-default 'cursor-type 'hbar)
 
-;;;;;;;;;;;;  Add to list ;;;;;;;;;;;;; 
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-(add-to-list 'load-path "~/.emacs.d/lisp" )
-
-;;;;;;;;;;;;; Visuals ;;;;;;;;;;;;;
 ;; Molokai theme
 (load-theme 'molokai t)
 
@@ -78,6 +77,90 @@
           (lambda ()
             (face-remap-add-relative
              'mode-line '(( :background "#1b1d1e") mode-line))))
+;;;;;; Auto Insert ;;;;
+
+(setq auto-insert-alist
+      '(((ruby-mode . "Ruby program") nil
+         "#!/usr/bin/env ruby\n\n"
+         "# File: " (file-name-nondirectory buffer-file-name) "\n"
+         "# Time-stamp: <>\n"
+         "# Copyright (C) " (substring (current-time-string) -4) " " auto-insert-copyright "\n"
+         "# Description: " _ "\n\n")
+	((emacs-lisp-mode . "Emacs lisp mode") nil
+         ";;; " (file-name-nondirectory buffer-file-name) " --- " _ "\n\n"
+         ";; Time-stamp: <>\n"
+         ";; Copyright (C) " (substring (current-time-string) -4) " " auto-insert-copyright "\n\n"
+         ";;; Commentary:\n\n"
+         ";;; Code:\n\n"
+         ";;; " (file-name-nondirectory buffer-file-name) " ends here\n")
+
+	((c-mode . "C program") nil
+	 "/* FILE: \t" (file-name-nondirectory buffer-file-name) "\n"
+	 " * AUTHOR: \tHamdaoui Hamza\n"
+	 " * DESCRIPTION:\tNULL\n"
+	 " * \n"
+	 " * CREATION:\t" (insert-date) "\n"
+	 " * MODIFIED:\t" (insert-date) "\n */\n\n"
+	 "/* ---------- headers ---------- */\n"
+	 "#include <stdio.h>\n#include <stdlib.h>\n\n"
+	 "/* ---------- types ---------- */\n\n"
+	 "/* ---------- prototypes ---------- */\n\n"
+	 "/* ---------- main entry ---------- */\N"
+	 "int main(int argc, char **argv) {\n"
+	 "  return 0;\n"
+	 "}\n\n"
+	 "/* ---------- implementations ---------- */\n"
+	 )
+        ((shell-mode . "Shell script") nil
+         "#!/bin/bash\n\n"
+         " # File: " (file-name-nondirectory buffer-file-name) "\n"
+         " # Time-stamp: <>\n"
+         " # Copyright (C) " (substring
+			      (current-time-string) -4) " "
+			      auto-insert-copyright "\n"
+			      " # Description: " _ "\n\n")
+	((cperl-mode . "Perl") nil
+	 "#!/usr/bin/perl"
+	 "\n#======================================================="
+	 "========================"
+	 "\n#"
+	 "\n#         FILE: " (file-name-nondirectory buffer-file-name)
+	 "\n#"
+	 "\n#        USAGE: ./" (file-name-nondirectory buffer-file-name)
+	 "\n#"
+	 "\n#  DESCRIPTION: ---"
+	 "\n#"
+	 "\n#      OPTIONS: ---"
+	 "\n# REQUIREMENTS: ---"
+	 "\n#         BUGS: ---"
+	 "\n#        NOTES: ---"
+	 "\n#       AUTHOR: Anas Rchid (0x0584) <rchid.anas@gmail.com>"
+	 "\n# ORGANIZATION: ---"
+	 "\n#      VERSION: 1.0"
+	 "\n#      CREATED: " (insert-date)
+	 "\n#     REVISION: ---"
+	 "\n#========================================================"
+	 "=======================")
+	)) 
+
+;; Disable mouse mode 
+(define-minor-mode disable-mouse-mode
+  "A minor-mode that disables all mouse keybinds."
+  :global t
+  :lighter " 🐭"
+  :keymap (make-sparse-keymap))
+
+(dolist (type '(mouse down-mouse drag-mouse
+                      double-mouse triple-mouse))
+  (dolist (prefix '("" C- M- S- M-S- C-M- C-S- C-M-S-))
+    ;; Yes, I actually HAD to go up to 7 here.
+    (dotimes (n 7)
+      (let ((k (format "%s%s-%s" prefix type n)))
+        (define-key disable-mouse-mode-map
+          (vector (intern k)) #'ignore)))))
+
+(disable-mouse-mode 1) ;; activate the mode
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
